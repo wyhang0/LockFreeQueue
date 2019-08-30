@@ -20,7 +20,7 @@ signals:
 
 private:
     QSharedPointer<LockFreeQueue<QString>> queue;
-    bool *controlFlag;
+    volatile bool *controlFlag;
     quint64 count;
 };
 

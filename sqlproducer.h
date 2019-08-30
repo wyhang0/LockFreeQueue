@@ -27,7 +27,7 @@ private:
     QSharedPointer<LockFreeQueue<QString>> queue;
     quint64 startValue;
     quint64 endValue;
-    bool *controlFlag;
+    volatile bool *controlFlag;
     quint64 count;
 };
 
