@@ -1,11 +1,13 @@
 #include "sqlconsumer.h"
+
 #include <QDateTime>
 #include <QThread>
-#include <Windows.h>
 #include <QDebug>
 
-SqlConsumer::SqlConsumer(QSharedPointer<LockFreeQueue<QString>> queue, bool *controlFlag, QObject *parent) :
-    queue(queue), controlFlag(controlFlag), QObject(parent)
+#include "cas.h"
+
+SqlConsumer::SqlConsumer(QSharedPointer<LOCKFREEQUEUE<int>> queue, bool *controlFlag, quint64 *tValue, QObject *parent) :
+    QObject(parent), queue(queue), controlFlag(controlFlag), tValue(tValue)
 {
 
 }
@@ -17,28 +19,24 @@ SqlConsumer::~SqlConsumer()
 
 void SqlConsumer::consume()
 {
-    count=0;
-    QString value;
-    quint64 sum = 0;
+    int *value;
 
-    bool ok;
     while(true){
         if(!*controlFlag){
             break;
         }
-        value = queue->dequeue(&ok);
-        if(value.compare("END") == 0){
-            break;
-        }
-        if(!ok){
-            Sleep(1);
+        if(!queue->dequeue(&value)){
+            if(*tValue == 0)
+                break;
+            QThread::msleep(1);
             continue;
         }
+//        qDebug()<<*value;
+        ATOMIC_SUB(tValue, *value);
 
-        sum += value.toULongLong();
-        count++;
+        delete value;
     }
 
-    qDebug()<<QDateTime::currentDateTime().toString("hh:mm:ss.zzz");
-    emit consumeDone(QThread::currentThread(), count, sum, this);
+    *controlFlag = false;
+    QThread::currentThread()->quit();
 }

@@ -1,12 +1,6 @@
 #ifndef LOCKFREEQUEUE_H
 #define LOCKFREEQUEUE_H
 
-#include <QString>
-
-/**
- * @brief The LockFreeQueue class
- * sizeof(void *)==32正常运行，sizeof(void *)==64更换InterlockedCompareExchange为InterlockedCompareExchange64
- */
 template <class T>
 class LockFreeQueue
 {
@@ -15,19 +9,17 @@ public:
     ~LockFreeQueue();
 
     double getUsageRage();
-    bool check();
-    void init();
 
     //线程安全
-    bool enqueue(const T &t);
+    bool enqueue(const T* const t);
     //线程安全
-    T dequeue(bool *ok = 0);
+    bool dequeue(T **t);
 
 private:
-    T **queue;
-    int capacity;
-    int tail;
-    int head;
+    T **_queue;
+    int _capacity;
+    volatile int _tail;
+    volatile int _head;
 };
 
 #include "lockfreequeue.cpp"

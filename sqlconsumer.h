@@ -3,25 +3,25 @@
 
 #include <QObject>
 #include <QSharedPointer>
-#include <lockfreequeue.h>
+
+#include "common.h"
+#include "lockfreequeue.h"
+#include "lockfreelinkqueue.h"
 
 class SqlConsumer : public QObject
 {
     Q_OBJECT
 public:
-    explicit SqlConsumer(QSharedPointer<LockFreeQueue<QString>> queue, bool *controlFlag, QObject *parent=0);
+    SqlConsumer(QSharedPointer<LOCKFREEQUEUE<int>> queue, bool *controlFlag, quint64 *tValue, QObject *parent=0);
     ~SqlConsumer();
 
 public slots:
     void consume();
 
-signals:
-    void consumeDone(QThread *currentThread, quint64 count, quint64 sum, SqlConsumer *sqlConsumer);
-
 private:
-    QSharedPointer<LockFreeQueue<QString>> queue;
-    volatile bool *controlFlag;
-    quint64 count;
+    QSharedPointer<LOCKFREEQUEUE<int>> queue;
+    bool *controlFlag;
+    volatile quint64 *tValue;
 };
 
 #endif // SQLCONSUMER_H

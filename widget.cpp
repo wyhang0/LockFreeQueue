@@ -1,14 +1,18 @@
 #include "widget.h"
 #include "ui_widget.h"
 
+#include <QTimer>
+#include <QDebug>
+#include <QMessageBox>
+#include <QApplication>
+
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
-
-    connect(&sqlTooBusiness, SIGNAL(execSqlCount(quint64, quint64, quint64)), this, SLOT(onExecSqlCount(quint64, quint64, quint64)));
-    connect(&sqlTooBusiness, SIGNAL(updateState(QString)), this, SLOT(onUpdateState(QString)));
+    connect(&sqlTooBusiness, &SqlTooBusiness::updateState, this, &Widget::onUpdateState);
+    connect(&sqlTooBusiness, &SqlTooBusiness::done, this, &Widget::onDone);
 
     ui->pushButton_Start->setEnabled(true);
     ui->pushButton_Stop->setEnabled(false);
@@ -23,31 +27,42 @@ Widget::~Widget()
 void Widget::on_pushButton_Stop_clicked()
 {
     ui->pushButton_Stop->setEnabled(false);
-    sqlTooBusiness.stop();
+    QApplication::processEvents();
 }
 
 void Widget::on_pushButton_Start_clicked()
 {
     ui->pushButton_Start->setEnabled(false);
+    ui->pushButton_Stop->setEnabled(true);
+    quint64 an = ui->spinBox_ProducerCount->text().toInt()*ui->spinBox_ProduceCount->text().toULongLong()-1;
+
+    consumeTValue = produceTValue = an*(an+1)/2;
+
     sqlTooBusiness.start(ui->spinBox_ConsumerCount->text().toInt(),
                          ui->spinBox_ProducerCount->text().toInt(),
-                         ui->spinBox_ProduceCount->text().toULongLong());
-    quint64 an = ui->spinBox_ProducerCount->text().toInt()*ui->spinBox_ProduceCount->text().toULongLong()-1;
-    ui->label_TValue->setText(QString::number(an*(an+1)/2));
-    ui->pushButton_Stop->setEnabled(true);
-}
-
-void Widget::onExecSqlCount(quint64 consumerAllConsumeCount, quint64 producerAllProduceCount, quint64 sumValue)
-{
-    ui->lineEdit_ConsumeCount->setText(QString::number(consumerAllConsumeCount));
-    ui->lineEdit_ProduceCount->setText(QString::number(producerAllProduceCount));
-    ui->label_AValue->setText(QString::number(sumValue));
-
-    ui->pushButton_Start->setEnabled(true);
-    ui->pushButton_Stop->setEnabled(false);
+                         ui->spinBox_ProduceCount->text().toULongLong(),
+                         &consumeTValue,
+                         &produceTValue);
 }
 
 void Widget::onUpdateState(QString queueUsageRate)
 {
     ui->lineEdit_QueueUsageRate->setText(queueUsageRate);
+    ui->label_CRValue->setText(QString::number(consumeTValue));
+    ui->label_PRValue->setText(QString::number(produceTValue));
+}
+
+void Widget::onDone()
+{
+    if(!ui->pushButton_Stop->isEnabled()){
+        ui->pushButton_Start->setEnabled(true);
+    }
+
+    if(consumeTValue != produceTValue){
+        QMessageBox::warning(this, "", "");
+    }else{
+        if(ui->pushButton_Stop->isEnabled()){
+            QTimer::singleShot(100, this, &Widget::on_pushButton_Start_clicked);
+        }
+    }
 }

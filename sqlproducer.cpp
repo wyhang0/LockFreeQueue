@@ -2,13 +2,14 @@
 
 #include <QThread>
 #include <QDateTime>
-#include <Windows.h>
 #include <QDebug>
 
-SqlProducer::SqlProducer(QSharedPointer<LockFreeQueue<QString>> queue, quint64 startValue, quint64 endValue, bool *controlFlag, QObject *parent) :
-    queue(queue), startValue(startValue), endValue(endValue), controlFlag(controlFlag), QObject(parent)
+#include "cas.h"
+
+SqlProducer::SqlProducer(QSharedPointer<LOCKFREEQUEUE<int>> queue, quint64 startValue, quint64 endValue, bool *controlFlag, quint64 *tValue, QObject *parent) :
+    QObject(parent), queue(queue), startValue(startValue), endValue(endValue), controlFlag(controlFlag), tValue(tValue)
 {
-    connect(this, SIGNAL(produce(QString,int)), this, SLOT(onProduce(QString,int)));
+
 }
 
 SqlProducer::~SqlProducer()
@@ -16,52 +17,23 @@ SqlProducer::~SqlProducer()
     qDebug()<<"~SqlProducer()";
 }
 
-void SqlProducer::emitProduce(QString str, int frequency)
-{
-    emit produce(str, frequency);
-}
-
 void SqlProducer::onProduce()
 {
-    count = 0;
-
-    qDebug()<<QDateTime::currentDateTime().toString("hh:mm:ss.zzz");
     do{
         for(quint64 i=startValue; i<endValue; i++){
-            if(!*controlFlag){
-                break;
-            }
-            QString value = QString::number(i);
+            int *value = new int(i);
+
             while(*controlFlag){
                 if(queue->enqueue(value)){
-                    count++;
+                    ATOMIC_SUB(tValue, i);
                     break;
                 }else{
-                    Sleep(1);
+                    QThread::msleep(1);
                     continue;
                 }
             }
         }
     }while(false);
 
-
-    bool isStopping = !*controlFlag;
-    emit produceDone(QThread::currentThread(), count, this, isStopping);
-    if(isStopping){
-        emit produceDone(QThread::currentThread(), count, this);
-    }
-}
-
-void SqlProducer::onProduce(QString str, int frequency)
-{
-    while(*controlFlag && frequency > 0){
-        if(queue->enqueue(str)){
-            frequency--;
-        }else{
-            Sleep(1);
-            continue;
-        }
-    }
-
-    emit produceDone(QThread::currentThread(), count, this);
+    QThread::currentThread()->quit();
 }

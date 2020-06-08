@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>327</height>
+    <width>459</width>
+    <height>361</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>10</y>
+     <x>50</x>
+     <y>30</y>
      <width>131</width>
      <height>16</height>
     </rect>
@@ -29,8 +29,8 @@
   <widget class="QSpinBox" name="spinBox_ProducerCount">
    <property name="geometry">
     <rect>
-     <x>120</x>
-     <y>10</y>
+     <x>180</x>
+     <y>30</y>
      <width>42</width>
      <height>22</height>
     </rect>
@@ -45,9 +45,9 @@
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>40</y>
-     <width>131</width>
+     <x>50</x>
+     <y>60</y>
+     <width>161</width>
      <height>16</height>
     </rect>
    </property>
@@ -58,8 +58,8 @@
   <widget class="QSpinBox" name="spinBox_ProduceCount">
    <property name="geometry">
     <rect>
-     <x>150</x>
-     <y>40</y>
+     <x>220</x>
+     <y>60</y>
      <width>101</width>
      <height>22</height>
     </rect>
@@ -80,8 +80,8 @@
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>180</x>
-     <y>10</y>
+     <x>240</x>
+     <y>30</y>
      <width>131</width>
      <height>16</height>
     </rect>
@@ -93,8 +93,8 @@
   <widget class="QSpinBox" name="spinBox_ConsumerCount">
    <property name="geometry">
     <rect>
-     <x>270</x>
-     <y>10</y>
+     <x>370</x>
+     <y>30</y>
      <width>42</width>
      <height>22</height>
     </rect>
@@ -106,63 +106,11 @@
     <number>3</number>
    </property>
   </widget>
-  <widget class="QLabel" name="label_4">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>80</y>
-     <width>131</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Produce Count </string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_5">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>120</y>
-     <width>131</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Consume Count </string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEdit_ProduceCount">
-   <property name="geometry">
-    <rect>
-     <x>120</x>
-     <y>80</y>
-     <width>113</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="readOnly">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEdit_ConsumeCount">
-   <property name="geometry">
-    <rect>
-     <x>120</x>
-     <y>120</y>
-     <width>113</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="readOnly">
-    <bool>true</bool>
-   </property>
-  </widget>
   <widget class="QLineEdit" name="lineEdit_QueueUsageRate">
    <property name="geometry">
     <rect>
-     <x>120</x>
-     <y>160</y>
+     <x>220</x>
+     <y>100</y>
      <width>113</width>
      <height>20</height>
     </rect>
@@ -174,8 +122,8 @@
   <widget class="QPushButton" name="pushButton_Start">
    <property name="geometry">
     <rect>
-     <x>120</x>
-     <y>290</y>
+     <x>160</x>
+     <y>260</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -187,8 +135,8 @@
   <widget class="QPushButton" name="pushButton_Stop">
    <property name="geometry">
     <rect>
-     <x>200</x>
-     <y>290</y>
+     <x>240</x>
+     <y>260</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -200,8 +148,8 @@
   <widget class="QLabel" name="label_6">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>160</y>
+     <x>50</x>
+     <y>100</y>
      <width>131</width>
      <height>16</height>
     </rect>
@@ -210,52 +158,52 @@
     <string>Queue Usage Rate</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_ActualValue">
+  <widget class="QLabel" name="label_ProduceRemain">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>200</y>
-     <width>81</width>
+     <x>50</x>
+     <y>150</y>
+     <width>161</width>
      <height>16</height>
     </rect>
    </property>
    <property name="text">
-    <string>Actual Value</string>
+    <string>Produce Remain Value</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_TheoreticalValue">
+  <widget class="QLabel" name="label_ConsumeRemainValue">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>220</y>
-     <width>111</width>
+     <x>50</x>
+     <y>170</y>
+     <width>161</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>Theoretical Value</string>
+    <string>Consume Remain Value</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_AValue">
+  <widget class="QLabel" name="label_PRValue">
    <property name="geometry">
     <rect>
-     <x>150</x>
-     <y>200</y>
-     <width>231</width>
-     <height>16</height>
+     <x>220</x>
+     <y>150</y>
+     <width>181</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="text">
     <string/>
    </property>
   </widget>
-  <widget class="QLabel" name="label_TValue">
+  <widget class="QLabel" name="label_CRValue">
    <property name="geometry">
     <rect>
-     <x>150</x>
-     <y>220</y>
-     <width>231</width>
-     <height>16</height>
+     <x>220</x>
+     <y>170</y>
+     <width>181</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="text">
@@ -265,10 +213,10 @@
   <widget class="QPlainTextEdit" name="plainTextEdit">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>240</y>
-     <width>41</width>
-     <height>51</height>
+     <x>70</x>
+     <y>210</y>
+     <width>51</width>
+     <height>61</height>
     </rect>
    </property>
    <property name="verticalScrollBarPolicy">

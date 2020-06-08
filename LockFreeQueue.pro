@@ -4,11 +4,13 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT  += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 DEFINES += ProducerConsuerTest
+
+#DEFINES += QT_NO_DEBUG_OUTPUT
 
 TARGET = SqliteDBTransferToMysqlDB
 TEMPLATE = app
@@ -26,6 +28,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
+    lockfreelinkqueue.cpp \
         widget.cpp \
     sqlproducer.cpp \
     sqlconsumer.cpp \
@@ -33,9 +36,12 @@ SOURCES += main.cpp\
     sqltoobusiness.cpp
 
 HEADERS  += widget.h \
+    common.h \
+    lockfreelinkqueue.h \
     sqlproducer.h \
     sqlconsumer.h \
     lockfreequeue.h \
-    sqltoobusiness.h
+    sqltoobusiness.h \
+    cas.h
 
 FORMS    += widget.ui

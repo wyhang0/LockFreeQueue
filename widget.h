@@ -21,12 +21,15 @@ private slots:
     void on_pushButton_Stop_clicked();
     void on_pushButton_Start_clicked();
 
-    void onExecSqlCount(quint64 consumerAllConsumeCount, quint64 producerAllProduceCount, quint64 sumValue);
     void onUpdateState(QString queueUsageRate);
+    void onDone();
 
 private:
     Ui::Widget *ui;
     SqlTooBusiness sqlTooBusiness;
+
+    quint64 consumeTValue;
+    quint64 produceTValue;
 };
 
 #endif // WIDGET_H
