@@ -110,3 +110,9 @@ bool Lockfreelinkqueue<T>::dequeue(T **t)
 
     return true;
 }
+
+template<class T>
+void Lockfreelinkqueue<T>::log(void (*func)(T *))
+{
+
+}

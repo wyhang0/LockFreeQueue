@@ -13,6 +13,8 @@ public:
     bool enqueue(const T* const t);
     bool dequeue(T **t);
 
+    void log(void (*func)(T *t));
+
 protected:
     struct Node
     {

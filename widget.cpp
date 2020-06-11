@@ -47,6 +47,9 @@ void Widget::on_pushButton_Start_clicked()
 
 void Widget::onUpdateState(QString queueUsageRate)
 {
+    if(!ui->pushButton_Stop->isEnabled()){
+        ui->pushButton_Start->setEnabled(true);
+    }
     ui->lineEdit_QueueUsageRate->setText(queueUsageRate);
     ui->label_CRValue->setText(QString::number(consumeTValue));
     ui->label_PRValue->setText(QString::number(produceTValue));
@@ -62,7 +65,7 @@ void Widget::onDone()
         QMessageBox::warning(this, "", "");
     }else{
         if(ui->pushButton_Stop->isEnabled()){
-            QTimer::singleShot(100, this, &Widget::on_pushButton_Start_clicked);
+            QTimer::singleShot(1, this, &Widget::on_pushButton_Start_clicked);
         }
     }
 }

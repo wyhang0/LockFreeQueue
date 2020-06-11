@@ -5,15 +5,18 @@ template <class T>
 class LockFreeQueue
 {
 public:
-    LockFreeQueue(int capacity);
+    LockFreeQueue(int capacity = 512);
     ~LockFreeQueue();
 
-    double getUsageRage();
+    double getUsageRage() const;
 
-    //线程安全
+    //多线程安全
     bool enqueue(const T* const t);
-    //线程安全
+    //多线程安全
     bool dequeue(T **t);
+
+    //参数为函数指针或者类的静态成员函数
+    void log(void (*func)(T *t));
 
 private:
     T **_queue;

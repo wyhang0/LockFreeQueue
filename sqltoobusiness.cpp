@@ -2,13 +2,13 @@
 
 #include <QThread>
 #include <QDateTime>
+#include <QMutexLocker>
 #include <QDebug>
-
 
 SqlTooBusiness::SqlTooBusiness(QObject *parent) :
     QObject(parent)
 {
-    queue = QSharedPointer<LOCKFREEQUEUE<int>>(new LOCKFREEQUEUE<int>(4096));
+    queue = QSharedPointer<LOCKFREEQUEUE<quint64>>(new LOCKFREEQUEUE<quint64>(4096));
     running = false;
 
     thread = new QThread();
@@ -38,7 +38,7 @@ bool SqlTooBusiness::start(int consumerThreadCount, int producerThreadCount, qui
 
     semaphore.release(consumerThreadCount + producerThreadCount);
 
-    qDebug()<<QDateTime::currentDateTime();
+    elapsedTimer.restart();
 
     for(int i = 0; i<consumerThreadCount; i++){
         QThread *consumer = new QThread();
@@ -75,11 +75,27 @@ void SqlTooBusiness::onTimeout()
     emit updateState(QString::number(queue->getUsageRage()));
 }
 
+
+static quint64 restValue;
+void func(quint64 *i){
+    restValue += *i;
+}
+
 void SqlTooBusiness::threadDone()
 {
+    static QMutex mutex;
+    QMutexLocker locker(&mutex);
+
     semaphore.acquire();
     if(semaphore.available() == 0){
-        qDebug()<<QDateTime::currentDateTime();
+        qDebug()<<"elapsed timer:"<<elapsedTimer.elapsed();
+
+        restValue = 0;
+        queue->log(func);
+        if(restValue != 0)
+            qDebug()<<restValue;
+
+        running = false;
         emit done();
     }
 }

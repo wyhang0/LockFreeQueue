@@ -6,7 +6,7 @@
 
 #include "cas.h"
 
-SqlConsumer::SqlConsumer(QSharedPointer<LOCKFREEQUEUE<int>> queue, bool *controlFlag, quint64 *tValue, QObject *parent) :
+SqlConsumer::SqlConsumer(QSharedPointer<LOCKFREEQUEUE<quint64>> queue, bool *controlFlag, quint64 *tValue, QObject *parent) :
     QObject(parent), queue(queue), controlFlag(controlFlag), tValue(tValue)
 {
 
@@ -14,29 +14,30 @@ SqlConsumer::SqlConsumer(QSharedPointer<LOCKFREEQUEUE<int>> queue, bool *control
 
 SqlConsumer::~SqlConsumer()
 {
-    qDebug()<<"~SqlConsumer()";
+//    qDebug()<<"~SqlConsumer()";
 }
 
 void SqlConsumer::consume()
 {
-    int *value;
+    quint64 *value;
 
     while(true){
         if(!*controlFlag){
             break;
         }
         if(!queue->dequeue(&value)){
-            if(*tValue == 0)
+            if(*tValue == 0){
                 break;
+            }
+
             QThread::msleep(1);
             continue;
         }
-//        qDebug()<<*value;
+
         ATOMIC_SUB(tValue, *value);
 
         delete value;
     }
 
-    *controlFlag = false;
     QThread::currentThread()->quit();
 }

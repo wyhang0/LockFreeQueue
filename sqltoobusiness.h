@@ -4,7 +4,7 @@
 #include <QSharedPointer>
 #include <QThread>
 #include <QTimer>
-#include <QBitArray>
+#include <QElapsedTimer>
 #include <QSemaphore>
 
 #include "common.h"
@@ -32,12 +32,13 @@ protected slots:
     void threadDone();
 
 private:
-    QSharedPointer<LOCKFREEQUEUE<int>> queue;//缓冲队列
+    QSharedPointer<LOCKFREEQUEUE<quint64>> queue;//缓冲队列
     bool running;
 
     QThread *thread;
     QTimer timer;
     QSemaphore semaphore;
+    QElapsedTimer elapsedTimer;
 };
 
 #endif // SQLTOOBUSINESS_H
