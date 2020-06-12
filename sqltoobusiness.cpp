@@ -17,7 +17,7 @@ SqlTooBusiness::SqlTooBusiness(QObject *parent) :
 
     connect(&timer, SIGNAL(timeout()), this, SLOT(onTimeout()));
 
-    timer.start(1);
+    timer.start(100);
 }
 
 SqlTooBusiness::~SqlTooBusiness()

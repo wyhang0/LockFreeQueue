@@ -65,7 +65,7 @@ void Widget::onDone()
         QMessageBox::warning(this, "", "");
     }else{
         if(ui->pushButton_Stop->isEnabled()){
-            QTimer::singleShot(1, this, &Widget::on_pushButton_Start_clicked);
+            QTimer::singleShot(0, this, &Widget::on_pushButton_Start_clicked);
         }
     }
 }

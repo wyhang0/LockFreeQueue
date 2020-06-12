@@ -93,22 +93,43 @@ bool LockFreeQueue<T>::dequeue(T **t)
 
         if(index == _tail){
             //"bug--数据会放在head与tail组成的队列之外，导致明明放了数据但是读不出来"的解决方法2
-            int step;
-            for(step = 0; step < _capacity; step++){
+
+            //方法2
+            int step = 0;
+            while(step < _capacity){
                 if(_queue[step] != NULL){
                      if(CAS(&_head, oldIndex, step)){
                         break;
                      }else{
                          oldIndex = _head;
-                         step = 0;
+                         continue;
                      }
                 }
+                step++;
             }
             if(step < _capacity){
                 continue;
             }else{
                 return false;
             }
+
+//            //方法1
+//            int step;
+//            for(step = 0; step < _capacity; step++){
+//                if(_queue[step] != NULL){
+//                     if(CAS(&_head, oldIndex, step)){
+//                        break;
+//                     }else{
+//                         oldIndex = _head;
+//                         step = -1; //step++后从0开始
+//                     }
+//                }
+//            }
+//            if(step < _capacity){
+//                continue;
+//            }else{
+//                return false;
+//            }
         }
 
         *t = _queue[index];

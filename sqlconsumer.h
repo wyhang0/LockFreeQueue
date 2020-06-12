@@ -21,7 +21,7 @@ public slots:
 private:
     QSharedPointer<LOCKFREEQUEUE<quint64>> queue;
     bool *controlFlag;
-    quint64 *tValue;
+    quint64 * tValue;
 };
 
 #endif // SQLCONSUMER_H
