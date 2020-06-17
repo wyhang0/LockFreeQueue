@@ -77,8 +77,9 @@ void SqlTooBusiness::onTimeout()
 
 
 static quint64 restValue;
-void func(quint64 *i){
-    restValue += *i;
+void func(quint64 *t, int head, int tail, int index){
+    qDebug()<<head <<tail <<index <<*t;
+    restValue += *t;
 }
 
 void SqlTooBusiness::threadDone()

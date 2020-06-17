@@ -42,6 +42,10 @@ double LockFreeQueue<T>::getUsageRage() const
     return value/_capacity;
 }
 
+#if 0
+//先放值再更新tail，先取值再更新head。(取值时线程异常退出可能造成取到的值未处理)
+//1.多线程消息乱序入队，多线程消息乱序出队。
+//2.单线程消息顺序入队，单线程消息顺序出队。(当"index == _tail"队列为空时直接返回false取数据失败)。
 template <class T>
 bool LockFreeQueue<T>::enqueue(const T* const t)
 {
@@ -92,19 +96,23 @@ bool LockFreeQueue<T>::dequeue(T **t)
         oldIndex = index;
 
         if(index == _tail){
+//            //单线程消息顺序出队
+//            return false;
+
             //"bug--数据会放在head与tail组成的队列之外，导致明明放了数据但是读不出来"的解决方法2
 
-            //方法2
+            //方法3
             int step = 0;
             while(step < _capacity){
-                if(_queue[step] != NULL){
-                     if(CAS(&_head, oldIndex, step)){
+                if(_queue[index] != NULL){
+                     if(CAS(&_head, oldIndex, index)){
                         break;
                      }else{
                          oldIndex = _head;
                          continue;
                      }
                 }
+                index = (index + 1) % _capacity;
                 step++;
             }
             if(step < _capacity){
@@ -112,6 +120,25 @@ bool LockFreeQueue<T>::dequeue(T **t)
             }else{
                 return false;
             }
+
+//            //方法2
+//            int step = 0;
+//            while(step < _capacity){
+//                if(_queue[step] != NULL){
+//                     if(CAS(&_head, oldIndex, step)){
+//                        break;
+//                     }else{
+//                         oldIndex = _head;
+//                         continue;
+//                     }
+//                }
+//                step++;
+//            }
+//            if(step < _capacity){
+//                continue;
+//            }else{
+//                return false;
+//            }
 
 //            //方法1
 //            int step;
@@ -149,12 +176,134 @@ bool LockFreeQueue<T>::dequeue(T **t)
     return true;
 }
 
+#elif 1
+//先更新tail再放值，先更新head再取值。(取值时线程异常退出可能造成取到的值未处理)
+//1.多线程消息顺序入队，多线程消息乱序出队。
+//2.多线程消息顺序入队，单线程消息顺序出队。(上次单线程取值之后未更新head值异常退出，再次运行单线程取值前需要更新head值到正确的地方，否则会死循环)
+
+template <class T>
+bool LockFreeQueue<T>::enqueue(const T* const t)
+{
+    int index;
+    while(true){
+        index = _tail;
+
+        if((index + 1) % _capacity == _head){
+            return false;
+        }
+
+        if(!CAS(&_tail, index, (index + 1) % _capacity)){
+            continue;
+        }
+
+        //值还没有取出去，往后面放
+        if(!CAS(&_queue[index], NULL, t)){
+            continue;
+        }
+
+        break;
+    }
+
+    return true;
+}
+#if 0
+//单线程消息顺序出队，(上次单线程取值之后未更新head值异常退出，再次运行单线程取值前需要更新head值到正确的地方，否则会死循环)
+//int index = _head, step = 0;
+//while (step < _capacity && _queue[index] == NULL) {
+//    index = (index + 1) % _capacity);
+//    step++;
+//}
+//_head = index;
+
+template <class T>
+bool LockFreeQueue<T>::dequeue(T **t)
+{
+    int index, oldIndex;
+    while (true) {
+        index = _head;
+        oldIndex = index;
+
+        if(index == _tail){
+            return false;
+        }
+
+        *t = _queue[index];
+
+        //1.值还没有放进去
+        //2.上次单线程取值之后未更新head值异常退出，再次运行单线程取值前需要更新head值到正确的地方，否则会死循环
+        if(*t == NULL){
+            continue;
+        }
+
+        if(CAS(&_queue[index], *t, NULL)){
+            break;
+        }
+    }
+
+    CAS(&_head, oldIndex, (index + 1) % _capacity);
+    return true;
+}
+
+#else
+//多线程消息乱序出队
+template <class T>
+bool LockFreeQueue<T>::dequeue(T **t)
+{
+    int index, oldIndex;
+    while (true) {
+        index = _head;
+        oldIndex = index;
+
+        if(index == _tail){
+            //值还没有放进去的，再试着读一遍
+            int step = 0;
+            while(step < _capacity){
+                if(_queue[index] != NULL){
+                     if(CAS(&_head, oldIndex, index)){
+                        break;
+                     }else{
+                         oldIndex = _head;
+                         continue;
+                     }
+                }
+                index = (index + 1) % _capacity;
+                step++;
+            }
+            if(step < _capacity){
+                continue;
+            }else{
+                return false;
+            }
+        }
+
+        if(!CAS(&_head, oldIndex, (index + 1) % _capacity)){
+            continue;
+        }
+
+        *t = _queue[index];
+        //值还没有放进去，等下次再读
+        if(*t == NULL){
+            continue;
+        }
+
+        if(!CAS(&_queue[index], *t, NULL)){
+            continue;
+        }
+
+        break;
+    }
+    return true;
+}
+#endif
+
+#endif
+
 template<class T>
-void LockFreeQueue<T>::log(void (*func)(T *))
+void LockFreeQueue<T>::log(void (*func)(T *t, int head, int tail, int index))
 {
     for(int i = 0; i < _capacity; i++){
         if(_queue[i] != NULL){
-            (*func)(_queue[i]);
+            (*func)(_queue[i], _head, _tail, i);
         }
     }
 }

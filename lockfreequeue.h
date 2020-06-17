@@ -16,7 +16,7 @@ public:
     bool dequeue(T **t);
 
     //参数为函数指针或者类的静态成员函数
-    void log(void (*func)(T *t));
+    void log(void (*func)(T *t, int head, int tail, int index));
 
 private:
     T **_queue;
