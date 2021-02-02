@@ -10,6 +10,7 @@ int IsPtr(...);  // match non-pointer
 
 #define LOCKFREEQUEUE LockFreeQueue
 
+//https://stackoverflow.com/questions/147267/easy-way-to-use-variables-of-enum-types-as-string-in-c/202511#202511
 //#include <stdio.h>
 //#define FL_INTERNAL_ARG_COUNT_PRIVATE_(\
 //    _0,  _1,  _2,  _3,  _4,  _5,  _6,  _7,  _8,  _9, \
